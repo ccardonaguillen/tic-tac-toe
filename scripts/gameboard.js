@@ -1,96 +1,8 @@
-var events = {
-    events: {},
-    on: function (eventName, fn) {
-        this.events[eventName] = this.events[eventName] || [];
-        this.events[eventName].push(fn);
-    },
-    off: function (eventName, fn) {
-        if (this.events[eventName]) {
-            for (var i = 0; i < this.events[eventName].length; i++) {
-                if (this.events[eventName][i] === fn) {
-                    this.events[eventName].splice(i, 1);
-                    break;
-                }
-            }
-        }
-    },
-    emit: function (eventName, data) {
-        if (this.events[eventName]) {
-            this.events[eventName].forEach(function (fn) {
-                fn(data);
-            });
-        }
-    },
-};
-
-let Player = function (name, marker) {
-    var score = 0;
-    var marker;
-
-    return {
-        name,
-        score,
-        marker,
-    };
-};
-
-let Tile = function (val) {
-    if (Array.isArray(val)) {
-        var [row, column] = val;
-        var $tile = $(`.tile[data-row=${row}][data-column=${column}]`).first();
-    } else {
-        var $tile = val;
-        var row = parseInt($tile.attr("data-row"));
-        var column = parseInt($tile.attr("data-column"));
-    }
-
-    var isTaken = false;
-    var owner;
-
-    $tile.on("click", selectTile);
-    events.on("announceWinner", highlightTiles);
-
-    function _render() {
-        if (owner) {
-            $tile.css({ "background-image": `url(${owner.marker})` });
-        }
-    }
-
-    function selectTile() {
-        if (isTaken) {
-            $tile.css({ "background-color": "red" });
-        } else {
-            isTaken = true;
-            owner = game.getActivePlayer();
-            // $tile.css({ "background-color": "blue" });
-
-            _render();
-            events.emit("validTileSelected", this);
-        }
-    }
-
-    function highlightTiles({ winner, tiles }) {
-        if (tiles.some((tile) => tile.row === row && tile.column === column)) {
-            $tile.css({ "background-color": "green" });
-        }
-    }
-
-    function getOwner() {
-        return owner;
-    }
-
-    return {
-        row,
-        column,
-        getOwner,
-        selectTile,
-    };
-};
-
-
 let game = (function () {
     const $board = $("#gameboard");
-    // const $tiles = $board.find(".tile");
+    const $resetButton = $("#restart");
+    const $nextRoundButton = $("#next-round");
+    
     var tiles = [];
     var moves = 0;
 
@@ -99,19 +11,25 @@ let game = (function () {
             tiles.push(Tile([i, j]));
         }
     }
-
+    
     var players = [
         Player("Alice", "../images/circle.svg"),
         Player("Bob", "../images/cross.svg"),
     ];
     var activePlayer = players[0];
 
-    // $tiles.each(function() {
-    //     new Tile($(this));
-    // })
+    $nextRoundButton.hide()
+
+    $resetButton.on('click', _restartGame);
+    $nextRoundButton.on('click', _nextRound);
 
     events.on("validTileSelected", _switchPlayer);
     events.on("validTileSelected", _checkWinner);
+    events.on("announceWinner", _showNextRoundNutton);
+
+    function _showNextRoundNutton() {
+        $nextRoundButton.show()
+    }
 
     function getActivePlayer() {
         return activePlayer;
@@ -120,6 +38,16 @@ let game = (function () {
     function _switchPlayer() {
         activePlayer = players.filter((player) => player != activePlayer)[0];
         moves++;
+    }
+
+    function _restartGame() {
+        moves = 0;
+        events.emit("gameRestarted")
+    }
+    
+    function _nextRound() {
+        moves = 0;
+        events.emit("nextRound")
     }
 
     function _checkWinner() {
