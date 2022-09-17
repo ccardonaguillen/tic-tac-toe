@@ -1,0 +1,19 @@
+:root {
+
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#gameboard {
+    display: grid;
+    grid-template: repeat(3, 100px) / repeat(3, 100px);
+    gap: 10px;
+}
+
+.tile {
+    background-color: grey;
+}
