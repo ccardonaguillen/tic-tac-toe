@@ -13,8 +13,8 @@ let game = (function () {
     }
     
     var players = [
-        Player("Alice", "../images/circle.svg"),
-        Player("Bob", "../images/cross.svg"),
+        Player("Alice", 1),
+        Robot("Bob", 2),
     ];
     var activePlayer = players[0];
 
@@ -23,11 +23,11 @@ let game = (function () {
     $resetButton.on('click', _restartGame);
     $nextRoundButton.on('click', _nextRound);
 
-    events.on("validTileSelected", _switchPlayer);
-    events.on("validTileSelected", _checkWinner);
-    events.on("announceWinner", _showNextRoundNutton);
+    events.on("validSelection", _switchPlayer);
+    events.on("validSelection", _checkWinner);
+    events.on("announceWinner", _showNextRoundButton);
 
-    function _showNextRoundNutton() {
+    function _showNextRoundButton() {
         $nextRoundButton.show()
     }
 
@@ -35,12 +35,19 @@ let game = (function () {
         return activePlayer;
     }
 
+    function getAvailableTiles() {
+        return tiles.filter(tile => !tile.getStatus())
+    }
+
     function _switchPlayer() {
         activePlayer = players.filter((player) => player != activePlayer)[0];
         moves++;
+
+        events.emit("playerSwitch", activePlayer);
     }
 
     function _restartGame() {
+        activePlayer = players[0];
         moves = 0;
         events.emit("gameRestarted")
     }
@@ -65,6 +72,8 @@ let game = (function () {
                 events.emit("announceWinner", { winner, tiles });
 
                 return true;
+            } else {
+                return false;
             }
         }
 
@@ -85,11 +94,16 @@ let game = (function () {
             (tile) => tile.row + tile.column === 2
         );
         if (areEqual(minorDiagTiles)) return;
+
+        if (moves === 9) {
+            events.emit("announceWinner", { winner: null, tiles });
+        }
     }
 
     return {
         players,
         tiles,
         getActivePlayer,
+        getAvailableTiles
     };
 })();

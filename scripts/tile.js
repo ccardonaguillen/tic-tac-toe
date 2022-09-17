@@ -12,6 +12,7 @@ let Tile = function (val) {
     var owner;
 
     $tile.on("click", selectTile);
+    
     events.on("announceWinner", _highlightTiles);
     events.on("gameRestarted", _reset);
     events.on("nextRound", _reset);
@@ -35,17 +36,21 @@ let Tile = function (val) {
 
     function selectTile() {
         if (isTaken) {
-            $tile.css({ "background-color": "red" });
+            // $tile.css({ "background-color": "red" });
+            events.emit("invalidSelection");
+
         } else {
             isTaken = true;
             owner = game.getActivePlayer();
 
             _render();
-            events.emit("validTileSelected", this);
+            events.emit("validSelection");
         }
     }
 
     function _highlightTiles({ winner, tiles }) {
+        if (!winner) return;
+        
         if (tiles.some((tile) => tile.row === row && tile.column === column)) {
             $tile.css({ "background-color": "green" });
         }
@@ -57,10 +62,16 @@ let Tile = function (val) {
         return owner;
     }
 
+    function getStatus () {
+        return isTaken;
+    }
+
     return {
+        tile: $tile,
         row,
         column,
         getOwner,
+        getStatus,
         selectTile,
     };
 };
