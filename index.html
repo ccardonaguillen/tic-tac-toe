@@ -6,24 +6,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tic-Tac-Toe | The Odin Project</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Reem+Kufi+Fun:wght@400..700&display=swap" rel="stylesheet">
     <script
         src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js">
     </script>
+    <script src="./scripts/events.js" defer></script>
+    <script src="./scripts/tile.js" defer></script>
+    <script src="./scripts/player.js" defer></script>
     <script src="./scripts/gameboard.js" defer></script>
+    <script src="./scripts/score.js" defer></script>
+
+
 </head>
 <body>
     <header>
-        <h1 class="logo">Tic-Tac-Toe</h1>
+        <h1 class="logo">
+            <span class="tic">Tic</span>
+            -
+            <span class="tac">Tac</span>
+            -
+            <span class="toe">Toe</span>
+        </h1>
     </header>
     <main>
-        <div id="players"></div>
-            <div class="mode">
-                <div>
-                    <button id="pvp">Player vs Player</button>
-                    <button id="pve">Player vs Bot</button>
-                </div>
-                <p id="score">Player1 1 - 0 Player2</p>
-            </div>
+        <div class="game-mode">
+            <button id="pvp">
+                <img src="./images/person.svg">
+                <span>Player vs Player</span>
+                <img src="./images/person.svg">
+            </button>
+            <button id="pve">
+                <img src="./images/person.svg">
+                <span>Player vs Bot</span>
+                <img src="./images/robot.svg"></button>
+        </div>
+        <div id="score-container">
+            <div class="player" data-player="1">Player1</div>
+            <div id="score">0-0</div>
+            <div class="player" data-player="2">Player2</div>
+        </div>
         <div id="gameboard">
             <div class="tile" data-row=0 data-column=0></div>
             <div class="tile" data-row=0 data-column=1></div>
@@ -34,6 +55,10 @@
             <div class="tile" data-row=2 data-column=0></div>
             <div class="tile" data-row=2 data-column=1></div>
             <div class="tile" data-row=2 data-column=2></div>
+        </div>
+        <div class="round-buttons">
+            <button id="restart">Restart Game</button>
+            <button id="next-round">Next Round</button>
         </div>
     </main>
 </body>
