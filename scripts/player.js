@@ -1,7 +1,7 @@
 var Player = function (name, num) {
     // Init variables
     var score = 0;
-    var marker = num === 1 ? "../images/circle.svg" : "../images/cross.svg";
+    var marker = num === 1 ? "images/circle.svg" : "images/cross.svg";
 
     // Connect events
     events.on("announceWinner", _setScore);
